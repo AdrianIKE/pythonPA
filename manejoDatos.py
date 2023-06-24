@@ -3,8 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math as m
 import psycopg2
-from google_prueba import upload_file
-
+#from google_prueba import upload_file
+conn = psycopg2.connect(
+    host="containers-us-west-54.railway.app",
+    port="5793",
+    username="postgres",
+    password="WD5HsM0kK2TjH68XNDWl",
+    database="railway"
+)
 def cadencia(df,tiempo):
     datos=0
     contador =0
@@ -55,8 +61,8 @@ def long_paso(df):
             pasos.append(datos)
             distancias.append(datosDis)
             contador = 0
-        datos = row[19]
-        datosDis = row[20]
+        datos = row[18]
+        datosDis = row[19]
         contador = contador + 1
     for i in range(len(pasos)):
         if(pasos[i] != paso_anterior):
@@ -66,7 +72,7 @@ def long_paso(df):
         
         
         
-    for j in range(len(distancia_paso)-1):
+    for j in range(0,5):
         
         distancias_final.append(distancia_paso[j+1]-distancia_paso[j])
             
@@ -77,7 +83,6 @@ def long_paso(df):
     print(res)
         
     return res
-   
 
 def angulo_tobillo(df,columna_tobillo,columna_pie):
     angulos_tobillo = []
@@ -116,7 +121,6 @@ def angulo_tobillo(df,columna_tobillo,columna_pie):
     #plt.plot(angulos_tobillo)
     #plt.show()
     return angulos_tobillo
-    
 
 def angulo_rodilla(df,columna_rodilla,columna_tobillo):
     angulos_rodilla = []
@@ -175,9 +179,7 @@ def angulo_pie(df,pie,columna):
     #plt.plot(angulos_pie)
     #plt.show()
     return angulos_pie
-    
-    
-    
+     
 def extraccion_tiempo(df):
     tiempo = []
     datos = 0
@@ -195,28 +197,34 @@ def extraccion_tiempo(df):
         
     return tiempo
 
-
 def start_data_analisis(folio):
     
     df = pd.read_csv(folio+'.csv')
     tiempo = extraccion_tiempo(df)
-    cadencia(df,tiempo)
+    #cadencia(df,tiempo)
     long_paso(df)
-    '''
-    angulos_pie_derecho = angulo_pie(df,"derecho",16)
-    angulos_pie_izquierdo = angulo_pie(df,"izquierdo",1)
-    angulos_rodilla_derecha =  angulo_rodilla(df,10,13)
-    angulos_rodilla_izquierda =  angulo_rodilla(df,7,4)
-    angulos_tobillo_derecho = angulo_tobillo(df,13,11)
-    angulos_tobillo_izquierdo = angulo_tobillo(df,4,2)
+    
+    angulos_pie_derecho = angulo_pie(df,"derecho",15)
+    angulos_pie_izquierdo = angulo_pie(df,"izquierdo",0)
+    angulos_rodilla_derecha =  angulo_rodilla(df,9,12)
+    angulos_rodilla_izquierda =  angulo_rodilla(df,6,3)
+    angulos_tobillo_derecho = angulo_tobillo(df,12,10)
+    angulos_tobillo_izquierdo = angulo_tobillo(df,3,1)
     df = pd.DataFrame({"Tiempo":tiempo,"AnguloRodillaDerecha":angulos_rodilla_derecha,"AnguloRodillaIzquierda":angulos_rodilla_izquierda,"AngulosPieDerecho":angulos_pie_derecho,
                        "AngulosPieIzquierdo":angulos_pie_izquierdo,"AngulosTobilloDerecho":angulos_tobillo_derecho,"AngulosTobilloIzquierdo":angulos_tobillo_izquierdo})
-    #cadencia = calculo_cadencia(angulos_tobillo_izquierdo,tiempo)
-    
-    
+
     df.to_csv("./"+folio+"res.csv",index=False)
     
-    upload_file(folio+"res.csv")
+start_data_analisis("ABR1234")
+start_data_analisis("ADR1234")
+#start_data_analisis("ALE1234")
+start_data_analisis("ALX1234")
+start_data_analisis("CAR1234")
+start_data_analisis("DIE1234")
+start_data_analisis("EDU1234")
+start_data_analisis("ERI1234")
+start_data_analisis("NAT1234")
+start_data_analisis("SOT1234")
+    #upload_file(folio+"res.csv")
     
     
-   '''
