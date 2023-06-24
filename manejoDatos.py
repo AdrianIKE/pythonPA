@@ -3,14 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math as m
 import psycopg2
-#from google_prueba import upload_file
-conn = psycopg2.connect(
-    host="containers-us-west-54.railway.app",
-    port="5793",
-    username="postgres",
-    password="WD5HsM0kK2TjH68XNDWl",
-    database="railway"
-)
+from google_prueba import upload_file
+
 def cadencia(df,tiempo):
     datos=0
     contador =0
@@ -201,8 +195,8 @@ def start_data_analisis(folio):
     
     df = pd.read_csv(folio+'.csv')
     tiempo = extraccion_tiempo(df)
-    #cadencia(df,tiempo)
-    long_paso(df)
+    cadencia_total = cadencia(df,tiempo)
+    lonpaso_final = long_paso(df)
     
     angulos_pie_derecho = angulo_pie(df,"derecho",15)
     angulos_pie_izquierdo = angulo_pie(df,"izquierdo",0)
@@ -215,16 +209,22 @@ def start_data_analisis(folio):
 
     df.to_csv("./"+folio+"res.csv",index=False)
     
-start_data_analisis("ABR1234")
-start_data_analisis("ADR1234")
-#start_data_analisis("ALE1234")
-start_data_analisis("ALX1234")
-start_data_analisis("CAR1234")
-start_data_analisis("DIE1234")
-start_data_analisis("EDU1234")
-start_data_analisis("ERI1234")
-start_data_analisis("NAT1234")
-start_data_analisis("SOT1234")
-    #upload_file(folio+"res.csv")
+    upload_file(folio+"res.csv")
+    
+    try:
+        conn = psycopg2.connect(
+            host="containers-us-west-54.railway.app",
+            port="5793",
+            username="postgres",
+            password="WD5HsM0kK2TjH68XNDWl",
+            database="railway"
+        )
+        
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO pacientes (paso, cadencia) VALUES(%s, %s)", (cadencia_total, lonpaso_final))
+        cursor.close()
+        conn.close()
+    except Exception:
+        print(Exception)
     
     
